@@ -1,5 +1,7 @@
 ## StackStorm Windows Runner
 
+[![Circle CI Build Status](https://circleci.com/gh/StackStorm/stackstorm-runner-windows/tree/master.svg?style=shield)](https://circleci.com/gh/StackStorm/stackstorm-runner-windows)
+
 This repository contains source code for winexe based StackStorm Windows
 runner.
 
