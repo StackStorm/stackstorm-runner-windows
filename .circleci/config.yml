@@ -1,0 +1,49 @@
+version: 2
+jobs:
+  install_runner:
+    docker:
+      - image: circleci/python:2.7
+      - image: rabbitmq:3
+      - image: mongo:3.4
+    steps:
+      - checkout
+      - run:
+          name: Clone StackStorm/st2 repo
+          command: |
+            make .clone_st2_repo
+      - restore_cache:
+          key: v1-dependency-cache-{{ checksum "/tmp/st2/requirements.txt" }}
+      - run:
+          name: Install StackStorm requirements
+          command: |
+            make .install_st2_dependencies
+      - run:
+          name: Prepare Environment
+          command: |
+            ./scripts/prepare-environment.sh
+      - run:
+          name: Install and Register Runner
+          command: |
+            # First verify runner is not installed
+            virtualenv/bin/pip list installed | grep -v stackstorm-runner-windows
+            virtualenv/bin/python /tmp/st2/tools/enumerate-runners.py | grep -v windows
+            make .install_and_register_runner
+      - run:
+          name: Verify Runner Has Been installed
+          command: |
+            virtualenv/bin/pip list installed | grep stackstorm-runner-windows
+            virtualenv/bin/python /tmp/st2/tools/enumerate-runners.py | grep windows
+            virtualenv/bin/python /tmp/st2/tools/enumerate-runners.py | grep windows-script
+            virtualenv/bin/python /tmp/st2/tools/enumerate-runners.py | grep windows-cmd
+      - run:
+          name: Run Runner Tests
+          command: |
+            source ~/.circlerc
+            cat ~/.buildenv
+            virtualenv/bin/nosetests --rednose --immediate --with-parallel --with-timer -s -v tests/unit/
+
+workflows:
+  version: 2
+  docs_checks:
+    jobs:
+      - install_runner
