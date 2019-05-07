@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  install_runner:
+  install_build_and_test_runner:
     docker:
       - image: circleci/python:2.7
       - image: rabbitmq:3
@@ -44,6 +44,17 @@ jobs:
 
 workflows:
   version: 2
-  docs_checks:
+  build_test_on_push:
     jobs:
-      - install_runner
+      - install_build_and_test_runner
+  build_test_nightly:
+    jobs:
+      - install_build_and_test_runner
+    triggers:
+      - schedule:
+          # NOTE: We run it at 1 am UTC every day
+          cron: "0 1 * * *"
+          filters:
+            branches:
+              only:
+                - master
