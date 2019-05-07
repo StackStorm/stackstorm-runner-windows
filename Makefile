@@ -9,7 +9,7 @@ COMPONENTS_RUNNERS := $(wildcard /tmp/st2/contrib/runners/*)
 	@echo
 	@echo "==================== cloning st2 ===================="
 	@echo
-	git clone -b remove_obsolete_runners_v310 --depth 1 https://github.com/StackStorm/st2.git $(ST2_REPO_PATH)
+	git clone --depth 1 https://github.com/StackStorm/st2.git $(ST2_REPO_PATH)
 
 .PHONY: .install_st2_dependencies
 .install_st2_dependencies: virtualenv
